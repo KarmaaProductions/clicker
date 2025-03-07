@@ -39,7 +39,7 @@
             transform: scale(1.1);
             background-color: gray;
         }
-        #score, #timer {
+        #score {
             font-size: 20px;
             margin-top: 20px;
             border: 3px solid white;
@@ -52,62 +52,44 @@
             font-size: 24px;
             font-weight: bold;
         }
+        #benefit {
+            font-size: 18px;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
     <h1 id="title">Color Clicker</h1>
     <button id="clickButton">Click me!</button>
     <p id="score">Clicks: 0</p>
-    <p id="timer">Time Left: 10s</p>
     <p id="advancement">Advancement: None</p>
+    <p id="benefit">Benefit: None</p>
 
     <script>
         let clicks = 0;
-        let timeLeft = 10;
-        let gameActive = false;
+        let pointsPerClick = 1;
 
         const advancements = [
-            { threshold: 10, text: "Red Rookie", color: "red" },
-            { threshold: 25, text: "Yellow Clicker", color: "yellow" },
-            { threshold: 50, text: "Green Pro", color: "lime" },
-            { threshold: 100, text: "Blue Master", color: "cyan" },
-            { threshold: 200, text: "Rainbow Legend", color: "white" }
+            { threshold: 10, text: "Red Rookie", color: "red", bonus: 2 },
+            { threshold: 25, text: "Yellow Clicker", color: "yellow", bonus: 3 },
+            { threshold: 50, text: "Green Pro", color: "lime", bonus: 4 },
+            { threshold: 100, text: "Blue Master", color: "cyan", bonus: 5 },
+            { threshold: 200, text: "Rainbow Legend", color: "white", bonus: 10 }
         ];
 
         document.getElementById("clickButton").addEventListener("click", function() {
-            if (!gameActive) {
-                startGame();
-            }
-            clicks++;
+            clicks += pointsPerClick;
             document.getElementById("score").innerText = "Clicks: " + clicks;
             updateAdvancement();
         });
-
-        function startGame() {
-            gameActive = true;
-            clicks = 0;
-            timeLeft = 10;
-            document.getElementById("score").innerText = "Clicks: 0";
-            document.getElementById("timer").innerText = "Time Left: 10s";
-            document.getElementById("advancement").innerText = "Advancement: None";
-            document.getElementById("advancement").style.color = "white";
-            
-            let countdown = setInterval(() => {
-                timeLeft--;
-                document.getElementById("timer").innerText = "Time Left: " + timeLeft + "s";
-                if (timeLeft <= 0) {
-                    clearInterval(countdown);
-                    gameActive = false;
-                    alert("Game Over! Your score: " + clicks);
-                }
-            }, 1000);
-        }
 
         function updateAdvancement() {
             for (let i = advancements.length - 1; i >= 0; i--) {
                 if (clicks >= advancements[i].threshold) {
                     document.getElementById("advancement").innerText = "Advancement: " + advancements[i].text;
                     document.getElementById("advancement").style.color = advancements[i].color;
+                    document.getElementById("benefit").innerText = "Benefit: " + advancements[i].bonus + " points per click";
+                    pointsPerClick = advancements[i].bonus;
                     break;
                 }
             }
