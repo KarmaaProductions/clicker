@@ -3,13 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fast Clicker Game</title>
+    <title>Color Clicker</title>
     <style>
+        @keyframes rgbGlow {
+            0% { color: red; }
+            25% { color: yellow; }
+            50% { color: lime; }
+            75% { color: cyan; }
+            100% { color: red; }
+        }
         body {
             text-align: center;
             font-family: Arial, sans-serif;
             background-color: black;
             color: white;
+        }
+        #title {
+            font-size: 40px;
+            font-weight: bold;
+            animation: rgbGlow 2s infinite linear;
+            text-shadow: 0px 0px 10px white;
         }
         #clickButton {
             font-size: 24px;
@@ -34,18 +47,32 @@
             display: inline-block;
             border-radius: 10px;
         }
+        #advancement {
+            margin-top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
-    <h1>Fast Clicker Game</h1>
+    <h1 id="title">Color Clicker</h1>
     <button id="clickButton">Click me!</button>
     <p id="score">Clicks: 0</p>
     <p id="timer">Time Left: 10s</p>
+    <p id="advancement">Advancement: None</p>
 
     <script>
         let clicks = 0;
         let timeLeft = 10;
         let gameActive = false;
+
+        const advancements = [
+            { threshold: 10, text: "Red Rookie", color: "red" },
+            { threshold: 25, text: "Yellow Clicker", color: "yellow" },
+            { threshold: 50, text: "Green Pro", color: "lime" },
+            { threshold: 100, text: "Blue Master", color: "cyan" },
+            { threshold: 200, text: "Rainbow Legend", color: "white" }
+        ];
 
         document.getElementById("clickButton").addEventListener("click", function() {
             if (!gameActive) {
@@ -53,6 +80,7 @@
             }
             clicks++;
             document.getElementById("score").innerText = "Clicks: " + clicks;
+            updateAdvancement();
         });
 
         function startGame() {
@@ -61,6 +89,8 @@
             timeLeft = 10;
             document.getElementById("score").innerText = "Clicks: 0";
             document.getElementById("timer").innerText = "Time Left: 10s";
+            document.getElementById("advancement").innerText = "Advancement: None";
+            document.getElementById("advancement").style.color = "white";
             
             let countdown = setInterval(() => {
                 timeLeft--;
@@ -71,6 +101,16 @@
                     alert("Game Over! Your score: " + clicks);
                 }
             }, 1000);
+        }
+
+        function updateAdvancement() {
+            for (let i = advancements.length - 1; i >= 0; i--) {
+                if (clicks >= advancements[i].threshold) {
+                    document.getElementById("advancement").innerText = "Advancement: " + advancements[i].text;
+                    document.getElementById("advancement").style.color = advancements[i].color;
+                    break;
+                }
+            }
         }
     </script>
 </body>
