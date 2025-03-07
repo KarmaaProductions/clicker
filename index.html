@@ -3,38 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Clicker Game</title>
+    <title>Fast Clicker Game</title>
     <style>
         body {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-        }
-        .container {
             text-align: center;
+            font-family: Arial, sans-serif;
+        }
+        #clickButton {
+            font-size: 24px;
+            padding: 20px;
+            margin-top: 20px;
+            cursor: pointer;
         }
         #score {
-            font-size: 2em;
-            margin-bottom: 20px;
-        }
-        #click-button {
-            padding: 10px 20px;
-            font-size: 1.5em;
-            cursor: pointer;
-            border: none;
-            background-color: #007bff;
-            color: white;
-            border-radius: 5px;
-        }
-        #click-button:hover {
-            background-color: #0056b3;
+            font-size: 20px;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div id="score">
+    <h1>Fast Clicker Game</h1>
+    <button id="clickButton">Click me!</button>
+    <p id="score">Clicks: 0</p>
+    <p id="timer">Time Left: 10s</p>
+
+    <script>
+        let clicks = 0;
+        let timeLeft = 10;
+        let gameActive = false;
+
+        document.getElementById("clickButton").addEventListener("click", function() {
+            if (!gameActive) {
+                startGame();
+            }
+            clicks++;
+            document.getElementById("score").innerText = "Clicks: " + clicks;
+        });
+
+        function startGame() {
+            gameActive = true;
+            clicks = 0;
+            timeLeft = 10;
+            document.getElementById("score").innerText = "Clicks: 0";
+            document.getElementById("timer").innerText = "Time Left: 10s";
+            
+            let countdown = setInterval(() => {
+                timeLeft--;
+                document.getElementById("timer").innerText = "Time Left: " + timeLeft + "s";
+                if (timeLeft <= 0) {
+                    clearInterval(countdown);
+                    gameActive = false;
+                    alert("Game Over! Your score: " + clicks);
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
