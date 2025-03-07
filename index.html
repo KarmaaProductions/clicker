@@ -8,16 +8,31 @@
         body {
             text-align: center;
             font-family: Arial, sans-serif;
+            background-color: black;
+            color: white;
         }
         #clickButton {
             font-size: 24px;
             padding: 20px;
             margin-top: 20px;
             cursor: pointer;
+            background-color: white;
+            color: black;
+            border: 5px solid white;
+            border-radius: 10px;
+            transition: transform 0.2s, background-color 0.2s;
         }
-        #score {
+        #clickButton:hover {
+            transform: scale(1.1);
+            background-color: gray;
+        }
+        #score, #timer {
             font-size: 20px;
             margin-top: 20px;
+            border: 3px solid white;
+            padding: 10px;
+            display: inline-block;
+            border-radius: 10px;
         }
     </style>
 </head>
