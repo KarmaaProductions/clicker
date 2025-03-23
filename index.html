@@ -3,97 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Color Clicker</title>
+    <title>Interactive Generative Art</title>
     <style>
-        @keyframes rgbGlow {
-            0% { color: red; }
-            25% { color: yellow; }
-            50% { color: lime; }
-            75% { color: cyan; }
-            100% { color: red; }
-        }
         body {
-            text-align: center;
-            font-family: Arial, sans-serif;
+            margin: 0;
+            overflow: hidden;
             background-color: black;
-            color: white;
         }
-        #title {
-            font-size: 40px;
-            font-weight: bold;
-            animation: rgbGlow 2s infinite linear;
-            text-shadow: 0px 0px 10px white;
-        }
-        #clickButton {
-            font-size: 24px;
-            padding: 20px;
-            margin-top: 20px;
-            cursor: pointer;
-            background-color: white;
-            color: black;
-            border: 5px solid white;
-            border-radius: 10px;
-            transition: transform 0.2s, background-color 0.2s;
-        }
-        #clickButton:hover {
-            transform: scale(1.1);
-            background-color: gray;
-        }
-        #score {
-            font-size: 20px;
-            margin-top: 20px;
-            border: 3px solid white;
-            padding: 10px;
-            display: inline-block;
-            border-radius: 10px;
-        }
-        #advancement {
-            margin-top: 20px;
-            font-size: 24px;
-            font-weight: bold;
-        }
-        #benefit {
-            font-size: 18px;
-            margin-top: 5px;
+        canvas {
+            display: block;
         }
     </style>
 </head>
 <body>
-    <h1 id="title">Color Clicker</h1>
-    <button id="clickButton">Click me!</button>
-    <p id="score">Clicks: 0</p>
-    <p id="advancement">Advancement: None</p>
-    <p id="benefit">Benefit: None</p>
-
+    <canvas id="artCanvas"></canvas>
     <script>
-        let clicks = 0;
-        let pointsPerClick = 1;
-
-        const advancements = [
-            { threshold: 10, text: "Red Rookie", color: "red", bonus: 2 },
-            { threshold: 25, text: "Yellow Clicker", color: "yellow", bonus: 3 },
-            { threshold: 50, text: "Green Pro", color: "lime", bonus: 4 },
-            { threshold: 100, text: "Blue Master", color: "cyan", bonus: 5 },
-            { threshold: 200, text: "Rainbow Legend", color: "white", bonus: 10 }
-        ];
-
-        document.getElementById("clickButton").addEventListener("click", function() {
-            clicks += pointsPerClick;
-            document.getElementById("score").innerText = "Clicks: " + clicks;
-            updateAdvancement();
-        });
-
-        function updateAdvancement() {
-            for (let i = advancements.length - 1; i >= 0; i--) {
-                if (clicks >= advancements[i].threshold) {
-                    document.getElementById("advancement").innerText = "Advancement: " + advancements[i].text;
-                    document.getElementById("advancement").style.color = advancements[i].color;
-                    document.getElementById("benefit").innerText = "Benefit: " + advancements[i].bonus + " points per click";
-                    pointsPerClick = advancements[i].bonus;
-                    break;
-                }
+        const canvas = document.getElementById("artCanvas");
+        const ctx = canvas.getContext("2d");
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        let particles = [];
+        
+        class Particle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 5 + 2;
+                this.color = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                this.velocityX = (Math.random() - 0.5) * 2;
+                this.velocityY = (Math.random() - 0.5) * 2;
+            }
+            update() {
+                this.x += this.velocityX;
+                this.y += this.velocityY;
+                this.size *= 0.98; // Shrink effect
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.closePath();
             }
         }
+        
+        function animate() {
+            ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            particles.forEach((particle, index) => {
+                particle.update();
+                particle.draw();
+                if (particle.size < 0.5) {
+                    particles.splice(index, 1);
+                }
+            });
+            requestAnimationFrame(animate);
+        }
+        
+        canvas.addEventListener("mousemove", (event) => {
+            for (let i = 0; i < 5; i++) {
+                particles.push(new Particle(event.clientX, event.clientY));
+            }
+        });
+        
+        animate();
     </script>
 </body>
 </html>
