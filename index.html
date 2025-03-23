@@ -51,6 +51,30 @@
         canvas.height = window.innerHeight;
         
         let isDrawing = false;
+        let particles = [];
+
+        class Particle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 5 + 2;
+                this.color = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                this.velocityX = (Math.random() - 0.5) * 2;
+                this.velocityY = (Math.random() - 0.5) * 2;
+            }
+            update() {
+                this.x += this.velocityX;
+                this.y += this.velocityY;
+                this.size *= 0.98;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.closePath();
+            }
+        }
 
         function startDrawing(event) {
             isDrawing = true;
@@ -59,42 +83,56 @@
         
         function stopDrawing() {
             isDrawing = false;
-            ctx.beginPath();
         }
         
         function draw(event) {
             if (!isDrawing) return;
-            ctx.lineWidth = 5;
-            ctx.lineCap = "round";
-            ctx.strokeStyle = `hsl(${Math.random() * 360}, 100%, 50%)`;
-            
-            ctx.lineTo(event.clientX, event.clientY);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(event.clientX, event.clientY);
+            particles.push(new Particle(event.clientX, event.clientY));
         }
         
+        function animate() {
+            particles.forEach((particle, index) => {
+                particle.update();
+                particle.draw();
+                if (particle.size < 0.5) {
+                    particles.splice(index, 1);
+                }
+            });
+            requestAnimationFrame(animate);
+        }
+
         function clearCanvas() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles = [];
         }
 
         function demoMode() {
             clearCanvas();
-            let text = "hello";
-            ctx.font = "100px Arial";
+            const text = "hello";
+            ctx.font = "100px cursive";
             let x = 100;
             let y = canvas.height / 2;
-            for (let i = 0; i < text.length; i++) {
-                let letter = text[i];
-                ctx.fillStyle = `hsl(${Math.random() * 360}, 100%, 50%)`;
-                ctx.fillText(letter, x, y);
-                x += 120;
+            let i = 0;
+            function drawLetter() {
+                if (i < text.length) {
+                    ctx.fillStyle = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                    ctx.fillText(text[i], x, y);
+                    for (let j = 0; j < 20; j++) {
+                        particles.push(new Particle(x + Math.random() * 20, y + Math.random() * 20));
+                    }
+                    x += 120;
+                    i++;
+                    setTimeout(drawLetter, 500);
+                }
             }
+            drawLetter();
         }
 
         canvas.addEventListener("mousedown", startDrawing);
         canvas.addEventListener("mouseup", stopDrawing);
         canvas.addEventListener("mousemove", draw);
+        
+        animate();
     </script>
 </body>
 </html>
